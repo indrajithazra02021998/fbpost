@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+	<script src='http://connect.facebook.net/en_US/all.js'></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="">
+</head>
+<body>
+	<script>
+		// initialize and setup facebook js sdk
+		window.fbAsyncInit = function() {
+		    FB.init({
+		      appId      : '2110838889212345',
+		      xfbml      : true,
+		      version    : 'v4.0'
+		    });
+		    FB.getLoginStatus(function(response) {
+		    	if (response.status === 'connected') {
+		    		document.getElementById('status').innerHTML = 'We are connected.';
+		    		document.getElementById('login').style.visibility = 'hidden';
+		    	} else if (response.status === 'not_authorized') {
+		    		document.getElementById('status').innerHTML = 'We are not logged in.'
+		    	} else {
+		    		document.getElementById('status').innerHTML = 'You are not logged into Facebook.';
+		    	}
+		    });
+		};
+		(function(d, s, id){
+		    var js, fjs = d.getElementsByTagName(s)[0];
+		    if (d.getElementById(id)) {return;}
+		    js = d.createElement(s); js.id = id;
+		    js.src = "https://connect.facebook.net/en_US/sdk.js";
+		    fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+		function login() {
+			FB.login(function(response) {
+				if (response.status === 'connected') {
+		    		document.getElementById('status').innerHTML = 'You are connected';
+		    		document.getElementById('login').style.visibility = 'hidden';
+		    	} else if (response.status === 'not_authorized') {
+		    		document.getElementById('status').innerHTML = 'We are not logged in.'
+		    	} else {
+		    		document.getElementById('status').innerHTML = 'You are not logged into Facebook.';
+		    	}
+			}, {scope: 'publish_pages,manage_pages'});
+		}
+		// getting basic user info
+		function getInfo() {
+			FB.api('/me', 'GET', {fields: 'first_name,last_name,name,id'}, function(response) {
+				document.getElementById('status').innerHTML = 'user name is:'+response.name+ 'and id is:'+response.id;
+			});
+		}
+		// posting on user timeline
+		function post() {
+			 var p_accessToken="EAAdZCyZCorabkBAIB9gWNczUDYNtMrqMB6TcdZBhRlcMZCdtq0JI6ZCyH3XP3ukryVzs8h6w7SCLZADrMpJIDLpVxUJPebj4sZBFNRbhKVMh1TKZCITgMDZAMa4U9Gg32AdBz5nk9xSAsjYbSdaXoZAyyxqcqwV6oIyzF336NBEJgFWEOzgyTBU9dUr4nY3uZAgr50ZD"
+		
+    // do post here....
+var pageId = '114221043295873'; // facebook page id from page info
+var message=document.getElementById('post').value;
+FB.login(function(){
+    // used to get user accessToken
+    var authResp = FB.getAuthResponse();
+  
+    // see what accounts user has access to
+    FB.api('/me/accounts', 'get', {access_token : authResp.accessToken}, function(response){
+console.log(response); // this is returning an object with the accounts
+FB.api('/me/permissions', 'get', {access_token : p_accessToken}, function(resp){console.log(resp)});
+/**
+ * permissions listed are "manage_pages", "publish_actions" and "public_profile"
+ * all marked as "status : granted"
+ */
+
+      // find the page access token for the page we want to admin
+      var pageAccessToken = ''; 
+      for(i in response.data){
+        if(response.data[i].id == pageId) {
+          pageAccessToken = response.data[i].access_token;
+        
+          // do the actual post now
+          FB.api('/' + pageId + '/feed', 'post', {
+            message: message,
+            access_token : pageAccessToken
+          }, function(info){
+			document.getElementById('status').innerHTML = 'posted successfully..'
+			document.getElementById('post').style.visibility = 'hidden';
+console.log(info);
+/**
+ * code    : 200
+ * message : "(#200) The user hasn't authorized the application to perform this action"
+ * type    : "OAuthException"
+ */
+          });
+
+        }
+      }
+    });
+  }, { scope: 'manage_pages,publish_pages' });
+
+		}
+		// scheduler post ........
+      
+          
+		 function schedulerPost(){
+			var p_accessToken="EAAdZCyZCorabkBAJ5ToQ6dGNDw3wzUtbgBvBZCbIP7XjCvI4oH6ZBf7izP3RC4gH9zlbHPjZBFmCYZAzBKqbme5X2Hj6ObGAJEBnZCHTZCLTfvQ98J7VUUFqUQTbN9Yj3ZCJj5ueZC9ixIkHQKuzp1HWIcYLOYojFrVaXUXa3NruMr8ZAZAfsMxNSbwlZAWKvv7Pri5v9dYijjZBEqaAZDZD"
+			var message=document.getElementById('post').value;
+		// do post here....
+		var pageId = '114221043295873';	 
+			FB.login(function(){
+    // used to get user accessToken
+    var authResp = FB.getAuthResponse();
+  
+    // see what accounts user has access to
+    FB.api('/me/accounts', 'get', {access_token : authResp.accessToken}, function(response){
+console.log(response); // this is returning an object with the accounts
+FB.api('/me/permissions', 'get', {access_token : p_accessToken}, function(resp){console.log(resp)});
+/**
+ * permissions listed are "manage_pages", "publish_actions" and "public_profile"
+ * all marked as "status : granted"
+ */
+
+      // find the page access token for the page we want to admin
+      var pageAccessToken = ''; 
+	 var unixtime='600'
+      for(i in response.data){
+        if(response.data[i].id == pageId) {
+          pageAccessToken = response.data[i].access_token;
+        
+          // do the actual post now
+          FB.api('/' + pageId + '/feed', 'post', {
+            message: message,
+			"scheduled_publish_time": 1568387640,
+     		"published": false,
+            access_token : pageAccessToken 
+          }, function(info){
+			  if(info.error)
+			  {
+				document.getElementById('status').innerHTML = ' failed to post message on fb'
+			  }
+			  
+			document.getElementById('status').innerHTML = ' shedule posted successfully..'
+			document.getElementById('post').style.visibility = 'hidden';
+            console.log(info);
+/**
+ * code    : 200
+ * message : "(#200) The user hasn't authorized the application to perform this action"
+ * type    : "OAuthException"
+ */
+          });
+
+        }
+      }
+    });
+  }, { scope: 'manage_pages,publish_pages' });
+
+		}
+	</script>
+
+	
+	<div class="container" style="margin-top: 100px;margin-left:500px;">  
+		<div id="status"></div><br>
+		<textarea type="text" id='post' name='doPost' placeholder="Write here........" style="border-radius:12px; width: 400px;background-color: aqua ;"></textarea><br><br>
+		<button onclick="getInfo()" class="btn btn-primary">Get Info</button>
+		<button onclick="post()" class="btn btn-success" >Post</button>
+		<button onclick="schedulerPost()" id="schedulerPost" class="btn btn-info" >Schedule post</button>
+	</div>
+	
+</body>
+</html>
