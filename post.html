@@ -133,7 +133,7 @@ FB.api('/me/permissions', 'get', {access_token : p_accessToken}, function(resp){
           // do the actual post now
           FB.api('/' + pageId + '/feed', 'post', {
             message: message,
-			"scheduled_publish_time": 1568387640,
+			"scheduled_publish_time": 1568392080,
      		"published": false,
             access_token : pageAccessToken 
           }, function(info){
@@ -158,6 +158,58 @@ FB.api('/me/permissions', 'get', {access_token : p_accessToken}, function(resp){
   }, { scope: 'manage_pages,publish_pages' });
 
 		}
+function upload(){
+	var imgURL="http://farm4.staticflickr.com/3332/3451193407_b7f047f4b4_o.jpg";
+	var p_accessToken="EAAdZCyZCorabkBAJ5ToQ6dGNDw3wzUtbgBvBZCbIP7XjCvI4oH6ZBf7izP3RC4gH9zlbHPjZBFmCYZAzBKqbme5X2Hj6ObGAJEBnZCHTZCLTfvQ98J7VUUFqUQTbN9Yj3ZCJj5ueZC9ixIkHQKuzp1HWIcYLOYojFrVaXUXa3NruMr8ZAZAfsMxNSbwlZAWKvv7Pri5v9dYijjZBEqaAZDZD"
+			var message=document.getElementById('post').value;
+		// do post here....
+		var pageId = '114221043295873';	 
+			FB.login(function(){
+    // used to get user accessToken
+    var authResp = FB.getAuthResponse();
+  
+    // see what accounts user has access to
+    FB.api('/me/accounts', 'get', {access_token : authResp.accessToken}, function(response){
+console.log(response); // this is returning an object with the accounts
+FB.api('/me/permissions', 'get', {access_token : p_accessToken}, function(resp){console.log(resp)});
+/**
+ * permissions listed are "manage_pages", "publish_actions" and "public_profile"
+ * all marked as "status : granted"
+ */
+
+      // find the page access token for the page we want to admin
+      var pageAccessToken = ''; 
+	 var unixtime='600'
+      for(i in response.data){
+        if(response.data[i].id == pageId) {
+          pageAccessToken = response.data[i].access_token;
+        
+          // do the actual post now
+          FB.api('/' + pageId + '/photos', 'post', {
+			  message:'photo of tiger',
+          url:imgURL,
+            access_token : pageAccessToken 
+          }, function(info){
+			  if(info.error)
+			  {
+				document.getElementById('status').innerHTML = ' failed to post message on fb'
+			  }
+			  
+			document.getElementById('status').innerHTML = ' photo posted successfully..'
+			//document.getElementById('post').style.visibility = 'hidden';
+            console.log(info);
+
+          });
+
+        }
+      }
+    });
+  }, { scope: 'manage_pages,publish_pages' });
+
+		}
+
+
+
 	</script>
 
 	
@@ -167,6 +219,9 @@ FB.api('/me/permissions', 'get', {access_token : p_accessToken}, function(resp){
 		<button onclick="getInfo()" class="btn btn-primary">Get Info</button>
 		<button onclick="post()" class="btn btn-success" >Post</button>
 		<button onclick="schedulerPost()" id="schedulerPost" class="btn btn-info" >Schedule post</button>
+		<button onclick="upload()" class="btn btn-warning">Photo upload</button>
+		
+		
 	</div>
 	
 </body>
